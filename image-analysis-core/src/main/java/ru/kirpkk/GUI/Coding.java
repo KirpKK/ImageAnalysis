@@ -1,4 +1,4 @@
-package GUI;
+package ru.kirpkk.GUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,8 +7,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
- * Created by Ксения on 30.11.2017.
+ * Created by Ксения on 22.11.2017.
  */
+
 /*- поле ввода словаря симоволов
 - поле ввода фразы, которую надо закодировать
 -поле результата кодировки
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 -поле результата дкодировки
 - дополнительные поля
 */
-public class Decoding extends JFrame {
+public class Coding extends JFrame {
 
     private JPanel panel;
     private JLabel dict;
@@ -26,15 +27,16 @@ public class Decoding extends JFrame {
     private JTextField endField;
     private JTextField dataField;
     private JButton bOK;
-    private JTextField decode;
+    private JTextField code;
+    private JTextField inter1;
+    private JTextField inter2;
 
     String strAlphabet;
     String data;
     String end;
     ArrayList alphabet = new ArrayList();
-    Double num;
 
-    Decoding() {
+    Coding() {
         JPanel pAlphabet = new JPanel(new GridLayout(1, 2));
         dict = new JLabel("Алфавит: ");
         dictionaryField = new JTextField(5);
@@ -42,7 +44,7 @@ public class Decoding extends JFrame {
         pAlphabet.add(dictionaryField);
 
         JPanel pData = new JPanel(new GridLayout(1, 2));
-        dataLabel = new JLabel("Число: ");
+        dataLabel = new JLabel("Текст: ");
         dataField = new JTextField();
         pData.add(dataLabel);
         pData.add(dataField);
@@ -53,16 +55,20 @@ public class Decoding extends JFrame {
         pEnd.add(endSymbol);
         pEnd.add(endField);
 
-        bOK = new JButton("Раскодировать");
-        decode = new JTextField();
+        bOK = new JButton("Закодировать");
+        code = new JTextField();
+        inter1  =new JTextField();
+        inter2 = new JTextField();
 
         panel = new JPanel();
-        panel.setLayout(new GridLayout(5,1,10,10));
+        panel.setLayout(new GridLayout(5, 1, 10, 10));
         panel.add(pAlphabet);
         panel.add(pEnd);
         panel.add(pData);
         panel.add(bOK);
-        panel.add(decode);
+        panel.add(code);
+        panel.add(inter1);
+        panel.add(inter2);
         panel.setVisible(true);
         add(panel);
 
@@ -74,13 +80,9 @@ public class Decoding extends JFrame {
                 data = dataField.getText();
                 if (strAlphabet.length() == 0) new JOptionPane("Введите алфавит");
                 if (end.length() == 0) new JOptionPane("Введите символ конца");
-                try {
-                    num = new Double(data);
-                } catch (NumberFormatException ex) {
-                    new JOptionPane("Введите символ конца");
-                }
+                if (data.length() == 0) new JOptionPane("Введите текст");
                 int k = 0;
-                for (String symbol:strAlphabet.split(",")) {
+                for (String symbol : strAlphabet.split(",")) {
                     if (symbol.toCharArray().length == 1) {
                         alphabet.add(k, symbol.toCharArray()[0]);
                         k++;
@@ -94,35 +96,32 @@ public class Decoding extends JFrame {
                     new JOptionPane("Введите символы!");
                 }
 
-                int i = 0;  //номер символа в алфавите
-                double a = 0, b = 1;   //границы интервала
+                int i = 0; //номер символа в алфавите
+                Double a = new Double(0);
+                Double b = new Double(1);  //границы интервала
                 int size = alphabet.size();
-                double d = (double) b/size;  //ширина интервала
-                Character symbol;
-                Character endSymbol = (Character) alphabet.get(k);
-                StringBuilder sb = new StringBuilder();
-                do {
-                    i = 0;
-                    boolean ok = false;
-                    while (!ok) {
-                        try {
-                        if ((num > a +d*i) & (num < a + d*(i+1))) ok = true;
-                        else i++;
-                        if (i > k) throw new Exception("Something's wrong");
-                    } catch (Exception exc) {
-                            new JOptionPane(exc.getMessage());
-                        }
+                double d = (double) b / size; //ширина интервала
+                data = data + end;
+                try {
+                    for (char symbol : data.toCharArray()) {
+                            i = alphabet.indexOf(symbol);
+                            if (i > -1) {
+                                a = a + i * d;
+                                b = a + d;
+                                d = d / size;
+                            } else {
+                                throw new Exception();
+                            }
                     }
-                    symbol = (Character) alphabet.get(i);
-                    a = a + d*i;
-                    b = a + d;
-                    d = d/size;
-                    sb.append(symbol);
-                } while (!endSymbol.equals(symbol));
+                    Double num = (a + b) / 2;
+                    code.setText(num.toString());
+                    inter1.setText(a.toString());
+                    inter2.setText(b.toString());
 
-                sb.deleteCharAt(sb.length()-1);
-
-                decode.setText(sb.toString());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(Coding.this, "Сообщение содержит символ не из алфавита!",
+                            "Error", 0);
+                }
             }
         });
 

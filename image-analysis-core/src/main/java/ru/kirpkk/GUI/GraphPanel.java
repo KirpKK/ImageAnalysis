@@ -1,4 +1,4 @@
-package GUI;
+package ru.kirpkk.GUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +34,7 @@ public class GraphPanel extends JPanel {
 
         g.drawRect(30, height - 15, width - 40, 1);
         g.drawRect(30, 15, 1, height - 30);
-        for (int t = 0; t < 256; t++) {
+        for (int t = 0;t < 256;t++) {
             g.drawRect((int) (30 + w * t), (int) (15 + (height - 30 - stat[t] * h)), (int) w, (int) (h * stat[t]));
         }
         String s = "0";

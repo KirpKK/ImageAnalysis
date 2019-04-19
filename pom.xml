@@ -6,7 +6,17 @@
 
     <groupId>ru.kirpkk</groupId>
     <artifactId>image-analysis</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>image-analysis-web</module>
+        <module>image-analysis-core</module>
+    </modules>
+
+    <properties>
+        <web.version>1.0-SNAPSHOT</web.version>
+        <core.version>1.0-SNAPSHOT</core.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -24,20 +34,20 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.7</version>
         </dependency>
-    </dependencies>
+</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+<build>
+<plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+            <source>8</source>
+            <target>8</target>
+        </configuration>
+    </plugin>
+</plugins>
+</build>
 
 
-</project>
+        </project>

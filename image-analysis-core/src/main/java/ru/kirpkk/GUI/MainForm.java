@@ -1,6 +1,6 @@
-package GUI;
+package ru.kirpkk.GUI;
 
-import ImageProcessing.ImageProcessing;
+import ru.kirpkk.image_processing.ImageProcessing;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

@@ -1,0 +1,191 @@
+<html>
+<head>
+    <title>Image analysis</title>
+    <!--<link rel="stylesheet" type="text/css" href="./home.css" />-->
+    <style>
+        body {
+            background-image: url("background.jpg");
+        }
+
+        div {
+            border-style: dotted;
+            border-color: beige;
+            border-radius: 10px;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        button {
+            margin: 7px;
+        }
+
+        ul {
+            list-style-type: circle;
+        }
+    </style>
+<body>
+
+<div>
+
+    <input id="mainImage" name="myFile" type="file"
+           dirname="D:\Учебная литература\Анализ изображений"
+           oninput="openImage()"/>
+    <!--oninput="tryGet()"/>-->
+    <button id="transpose" onclick="transposeImage()">
+        Transpose
+    </button>
+
+    <button id="verticalReflection" onclick="verticalReflectionImage()">
+        Vertical reflection
+    </button>
+
+    <button id="horizontalReflection" onclick="horizontalReflectionImage()">
+        Horizontal reflection
+    </button>
+
+    <button id="equalize" onclick="equalize()">
+        Equalize
+    </button>
+
+    <input id="angle"/>
+
+    <button id="rotate" onclick="rotateImage()">
+        Rotate
+    </button>
+</div>
+
+<div>
+    <input id="secondImage" name="myFile" type="file"
+           dirname="D:\Учебная литература\Анализ изображений"
+    />
+
+    <input id="alpha" name="myFile" type="file"
+           dirname="D:\Учебная литература\Анализ изображений"
+    />
+
+    <button id="blend" onclick="blendImage()">
+        Blending
+    </button>
+</div>
+
+<div>
+    <button id="histogram" onclick="getHistogram()">
+        Histogram
+    </button>
+    <button id="statistics" onclick="getStatistics()">
+        Statistics
+    </button>
+
+    <div>
+        dc:
+        <input id="dc"/>
+        dr:
+        <input id="dr"/>
+
+        <button id="co-occurrenceMatrix" onclick="getCooccurrenceMatrix()">
+            Co-occurrence matrix
+        </button>
+        <button id="co-occurrenceMatrixUniformity" onclick="getCooccurrenceMatrixUniformity()">
+            Co-occurrence matrix Uniformity
+        </button>
+    </div>
+</div>
+
+
+<div>
+    <ul>
+        <input type="radio" name="type" value="fast" checked> fast<br>
+        <input type="radio" name="type" value="desaturate"> desaturate<br>
+        <input type="radio" name="type" value="human"> human<br>
+        <input type="radio" name="type" value="max"> max<br>
+        <input type="radio" name="type" value="min"> min<br>
+    </ul>
+    <button id="grayscale" onclick="grayscale()">
+        convert to grayscale image
+    </button>
+</div>
+
+<!--type="module" src="../app.js"-->
+<script language="JavaScript">
+    // let $ = require('jquery');
+    let path;
+    let ext;
+
+    function tryGet() {
+        $.get('http://localhost:8080/image/', {}, (data) => {alert(data)});
+    }
+
+    function openImage() {
+        let input = document.getElementById("mainImage").value;
+        path = input.substring(0, input.lastIndexOf('.')).replace('C:\\fakepath\\', '');
+        ext = input.substring(input.lastIndexOf('.') + 1);
+        window.open('http://localhost:8080/image/' + path + '/' + ext);
+    }
+
+    function transposeImage() {
+        window.open('http://localhost:8080/transpose/' + path + '/' + ext);
+    }
+
+    function verticalReflectionImage() {
+        window.open('http://localhost:8080/verticalReflection/' + path + '/' + ext);
+    }
+
+    function horizontalReflectionImage() {
+        window.open('http://localhost:8080/horizontalReflection/' + path + '/' + ext);
+    }
+
+    function blendImage() {
+        let input2 = document.getElementById("secondImage").value;
+        let path2 = input2.substring(0, input2.lastIndexOf('.')).replace('C:\\fakepath\\', '');
+        let ext2 = input2.substring(input2.lastIndexOf('.') + 1);
+
+        let input3 = document.getElementById("alpha").value;
+        let path3 = input3.substring(0, input3.lastIndexOf('.')).replace('C:\\fakepath\\', '');
+        let ext3 = input3.substring(input3.lastIndexOf('.') + 1);
+
+        window.open('http://localhost:8080/blend/' + path + '/' + ext + '/' + path2 + '/' + ext2 + '/' + path3 + '/' + ext3);
+    }
+
+    function rotateImage() {
+        let angle = document.getElementById("angle").value;
+
+        window.open('http://localhost:8080/rotated/' + path + '/' + ext + '/' + angle);
+    }
+
+    function grayscale() {
+        let type;
+        document.getElementsByName("type")
+            .forEach(el => {
+                if (el.checked === true) type = el.value
+            });
+        window.open('http://localhost:8080/grayscale/' + type + '/' + path + '/' + ext);
+    }
+
+    function equalize() {
+        window.open('http://localhost:8080/equalize/' + path + '/' + ext);
+    }
+
+    function getHistogram() {
+        window.open('http://localhost:8080/histogram/' + path + '/' + ext);
+    }
+
+    function getStatistics() {
+        window.open('http://localhost:8080/statistics/' + path + '/' + ext);
+    }
+
+    function getCooccurrenceMatrix() {
+        let dr = document.getElementById("dr").value;
+        let dc = document.getElementById("dc").value;
+        window.open('http://localhost:8080/cooccurrence/' + path + '/' + ext + '/' + dr + '/' + dc);
+    }
+
+    function getCooccurrenceMatrixUniformity() {
+        let dr = document.getElementById("dr").value;
+        let dc = document.getElementById("dc").value;
+        window.open('http://localhost:8080/cooccurrenceUniformity/' + path + '/' + ext + '/' + dr + '/' + dc);
+    }
+</script>
+
+</body>
+
+</html>

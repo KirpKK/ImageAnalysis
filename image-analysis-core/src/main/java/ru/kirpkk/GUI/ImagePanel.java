@@ -1,4 +1,4 @@
-package GUI;
+package ru.kirpkk.GUI;
 
 import javax.swing.*;
 import java.awt.*;

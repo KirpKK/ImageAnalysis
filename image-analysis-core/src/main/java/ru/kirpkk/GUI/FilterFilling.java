@@ -1,6 +1,6 @@
-package GUI;
+package ru.kirpkk.GUI;
 
-import ImageProcessing.ImageProcessing;
+import ru.kirpkk.image_processing.ImageProcessing;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,8 +63,8 @@ public class FilterFilling extends JFrame{
                 matrix = new Float[rows][cols];
                 try {
                     try {
-                        for (int i = 0; i < rows; i++) {
-                            for (int j = 0; j < cols; j++) {
+                        for (int i = 0;i < rows;i++) {
+                            for (int j = 0;j < cols;j++) {
                                 matrix[i][j] = new Float((String) (table.getModel().getValueAt(i, j)));
                             }
                         }
