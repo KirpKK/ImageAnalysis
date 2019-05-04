@@ -91,6 +91,13 @@
     </div>
 </div>
 
+<div>
+    <input id="newBpp"/>
+
+    <button id="compress" onclick="compressImage()">
+        compress
+    </button>
+</div>
 
 <div>
     <ul>
@@ -183,6 +190,12 @@
         let dr = document.getElementById("dr").value;
         let dc = document.getElementById("dc").value;
         window.open('http://localhost:8080/cooccurrenceUniformity/' + path + '/' + ext + '/' + dr + '/' + dc);
+    }
+
+    function compressImage() {
+        let newBpp = document.getElementById("newBpp").value;
+
+        window.open('http://localhost:8080/compress/' + path + '/' + ext + '/' + newBpp);
     }
 </script>
 

@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.kirpkk.image_processing.ImageProcessing;
+import ru.kirpkk.image_processing.ImageCompressing;
 import ru.kirpkk.image_processing.ImageRotating;
 import ru.kirpkk.image_processing.Statistics;
 import ru.kirpkk.image_processing.matrix.MatrixTransformation;
@@ -232,6 +233,20 @@ class Controller {
         try {
             BufferedImage image = openImage(path, ext);
             BufferedImage result = ImageRotating.getRotatedImage(angle, image);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            ImageIO.write(result, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            response.sendError(400, "Incorrect image");
+        }
+    }
+
+    @RequestMapping(value = "/compress/{path}/{ext}/{newBpp}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getCompressedImage(HttpServletResponse response, @PathVariable String path, @PathVariable String ext,
+                                                  @PathVariable byte newBpp) throws IOException {
+        try {
+            BufferedImage image = openImage(path, ext);
+            BufferedImage result = ImageCompressing.getCompressedImage(newBpp, image);
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             ImageIO.write(result, "jpg", response.getOutputStream());
         } catch (IOException e) {
