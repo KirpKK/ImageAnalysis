@@ -280,52 +280,6 @@ public class ImageProcessing {
         return uniformity/(numberOfPairs*numberOfPairs);
     }
 
-    public static BufferedImage filter(BufferedImage image, Float[][] f, int numR, int numC, int i, int j) {
-        BufferedImage im = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-        int r, g, b;
-        Color c;
-        float koeff = 0;
-        for (int p = 0;p < numR;p++) {
-            for (int y = 0;y < numC;y++) {
-                koeff += f[p][y];
-            }
-        }
-        if (koeff == 0) koeff = 1;
-        int wi = image.getWidth();
-        int h = image.getHeight();
-        for (int k = 0;k < wi;k++) {
-            for (int l = 0;l < h;l++) {
-                r = 0;
-                g = 0;
-                b = 0;
-
-                for (int q = 0;q < numC;q++) {
-                    for (int w = 0;w < numR;w++) {
-                        int y = (h + l + w - i + 1) % h;
-                        int x = (wi + k + q - j + 1) % wi;
-                        //c = new Color(image.getRGB(2*(k+q-i+1)/wi,2*(l+w-j+1)/h));
-                        c = new Color(image.getRGB(x, y));
-                        r = r + (int) (c.getRed() * f[w][q]);
-                        g = g + (int) (c.getGreen() * f[w][q]);
-                        b = b + (int) (c.getBlue() * f[w][q]);
-                    }
-                }
-                r = (int) (r / koeff);
-                g = (int) (g / koeff);
-                b = (int) (b / koeff);
-                if (r < 0) r = 0;
-                if (r > 255) r = 255;
-                if (g < 0) g = 0;
-                if (g > 255) g = 255;
-                if (b < 0) b = 0;
-                if (b > 255) b = 255;
-                c = new Color(r, g, b);
-                im.setRGB(k, l, c.getRGB());
-            }
-        }
-        return im;
-    }
-
     public static BufferedImage binary(BufferedImage image) {
         BufferedImage im = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
         int threshold = 128;

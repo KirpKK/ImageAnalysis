@@ -3,10 +3,7 @@ package ru.kirpkk.controller;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import ru.kirpkk.image_processing.ImageProcessing;
-import ru.kirpkk.image_processing.ImageCompressing;
-import ru.kirpkk.image_processing.ImageRotating;
-import ru.kirpkk.image_processing.Statistics;
+import ru.kirpkk.image_processing.*;
 import ru.kirpkk.image_processing.matrix.MatrixTransformation;
 
 import javax.imageio.ImageIO;
@@ -22,9 +19,6 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 @RestController
 class Controller {
     static String BASE_DIR = "D:\\Учебная литература\\Анализ изображений\\";
-
-//    @Autowired
-//    private IFooService service;
 
     @RequestMapping(value = "/app.js", method = RequestMethod.GET)
     public String scriptApp() throws IOException {
@@ -229,7 +223,7 @@ class Controller {
     @RequestMapping(value = "/rotated/{path}/{ext}/{angle}", method = RequestMethod.GET)
     @ResponseBody
     public void getRotatedImage(HttpServletResponse response, @PathVariable String path, @PathVariable String ext,
-                                                  @PathVariable double angle) throws IOException {
+                                @PathVariable double angle) throws IOException {
         try {
             BufferedImage image = openImage(path, ext);
             BufferedImage result = ImageRotating.getRotatedImage(angle, image);
@@ -240,17 +234,118 @@ class Controller {
         }
     }
 
-    @RequestMapping(value = "/compress/{path}/{ext}/{newBpp}", method = RequestMethod.GET)
+    @RequestMapping(value = "/quantize/{path}/{ext}/{newBpp}", method = RequestMethod.GET)
     @ResponseBody
-    public void getCompressedImage(HttpServletResponse response, @PathVariable String path, @PathVariable String ext,
-                                                  @PathVariable byte newBpp) throws IOException {
+    public void getQuantizedImage(HttpServletResponse response, @PathVariable String path, @PathVariable String ext,
+                                  @PathVariable byte newBpp) throws IOException {
         try {
             BufferedImage image = openImage(path, ext);
-            BufferedImage result = ImageCompressing.getCompressedImage(newBpp, image);
+            BufferedImage result = ImageQuantization.getQuantizedImage(newBpp, image);
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             ImageIO.write(result, "jpg", response.getOutputStream());
         } catch (IOException e) {
             response.sendError(400, "Incorrect image");
+        } catch (Exception e) {
+            response.sendError(400, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/convolution/{width}/{height}", method = RequestMethod.GET)
+    @ResponseBody
+    public String convolution(@PathVariable byte width, @PathVariable byte height) throws IOException {
+        final String input = "<input id=\"%s\"/>";
+        final String get = " + document.getElementById(\"%s\").value + ','";
+        try (InputStream is = Controller.class.getResourceAsStream("/convolution.html")) {
+            String conv = IOUtils.toString(is);
+            StringBuilder inputFields = new StringBuilder();
+            StringBuilder getFields = new StringBuilder();
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    inputFields.append(String.format(input, i + "." + j));
+                    getFields.append(String.format(get, i + "." + j));
+                }
+                inputFields.append("<br/>\n");
+            }
+            conv = String.format(conv, inputFields.toString(), getFields.toString());
+            return conv;
+        }
+    }
+
+    @RequestMapping(value = "/convolution/{width}/{height}/{path}/{ext}/{mainRow}/{mainColumn}/{aperture}", method = RequestMethod.GET)
+    @ResponseBody
+    public void convolution(HttpServletResponse response,
+                            @PathVariable int width, @PathVariable int height,
+                            @PathVariable String path, @PathVariable String ext,
+                            @PathVariable String aperture,
+                            @PathVariable int mainRow, @PathVariable int mainColumn) throws IOException {
+        try {
+            BufferedImage image = openImage(path, ext);
+            Float[][] f = new Float[height][width];
+            String[] apertureElements = aperture.split(",");
+
+            int denominator = Integer.valueOf(apertureElements[width * height]);
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    f[i][j] = Float.valueOf(apertureElements[i * width + j]) / denominator;
+                }
+            }
+
+            BufferedImage result = ImageFiltering.convolution(image, f, height, width, mainRow, mainColumn);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            ImageIO.write(result, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            response.sendError(400, "Incorrect image");
+        } catch (Exception e) {
+            response.sendError(400, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/rankFiltering/{width}/{height}", method = RequestMethod.GET)
+    @ResponseBody
+    public String rankFiltering(@PathVariable byte width, @PathVariable byte height) throws IOException {
+        final String input = "<input id=\"%s\"/>";
+        final String get = " + document.getElementById(\"%s\").value + ','";
+        try (InputStream is = Controller.class.getResourceAsStream("/rankFiltering.html")) {
+            String rankFiltering = IOUtils.toString(is);
+            StringBuilder inputFields = new StringBuilder();
+            StringBuilder getFields = new StringBuilder();
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    inputFields.append(String.format(input, i + "." + j));
+                    getFields.append(String.format(get, i + "." + j));
+                }
+                inputFields.append("<br/>\n");
+            }
+            rankFiltering = String.format(rankFiltering, inputFields.toString(), getFields.toString());
+            return rankFiltering;
+        }
+    }
+
+    @RequestMapping(value = "/rankFiltering/{width}/{height}/{path}/{ext}/{mainRow}/{mainColumn}/{rank}/{aperture}", method = RequestMethod.GET)
+    @ResponseBody
+    public void rankFiltering(HttpServletResponse response,
+                            @PathVariable int width, @PathVariable int height,
+                            @PathVariable String path, @PathVariable String ext,
+                            @PathVariable int rank,@PathVariable String aperture,
+                            @PathVariable int mainRow, @PathVariable int mainColumn) throws IOException {
+        try {
+            BufferedImage image = openImage(path, ext);
+            int[][] f = new int[height][width];
+            String[] apertureElements = aperture.split(",");
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    f[i][j] = Integer.valueOf(apertureElements[i * width + j]);
+                }
+            }
+
+            BufferedImage result = ImageFiltering.rankFilter(image, f, height, width, mainRow, mainColumn, rank);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            ImageIO.write(result, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            response.sendError(400, "Incorrect image");
+        } catch (Exception e) {
+            response.sendError(400, e.getMessage());
         }
     }
 

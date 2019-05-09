@@ -1,18 +1,20 @@
 package ru.kirpkk.image_processing;
 
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ImageCompressing {
-    public static BufferedImage getCompressedImage(byte newBpp, BufferedImage image) {
+import static ru.kirpkk.image_processing.Utils.getSortedArray;
+
+public class ImageQuantization {
+    public static BufferedImage getQuantizedImage(byte newBpp, BufferedImage image) throws Exception {
+        if (newBpp < 1 || newBpp > 7) throw new Exception("Incorrect new color depth");
         int width = image.getWidth();
         int height = image.getHeight();
-        Set<Integer> red = new HashSet<>();
-        Set<Integer> green = new HashSet<>();
-        Set<Integer> blue = new HashSet<>();
+        List<Integer> red = new ArrayList();
+        List<Integer> green = new ArrayList();
+        List<Integer> blue = new ArrayList();
         BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), 1);
         for (int k = 0; k < width; k++) {
             for (int l = 0; l < height; l++) {
@@ -36,6 +38,11 @@ public class ImageCompressing {
                 Color color = new Color(image.getRGB(k, l));
                 Color newColor = getClosestColor(color, paletteRed, paletteGreen, paletteBlue);
                 newImage.setRGB(k, l, newColor.getRGB());
+                int errorR = (color.getRed() - newColor.getRed()) / 16;
+                int errorG = (color.getGreen() - newColor.getGreen()) / 16;
+                int errorB = (color.getBlue() - newColor.getBlue()) / 16;
+
+                diffuseError(image, k, l, errorR, errorG, errorB);
             }
         }
         return newImage;
@@ -49,22 +56,19 @@ public class ImageCompressing {
     }
 
     private static int getClosest(int exact, int[] palette) {
-//        return palette.stream().min(Comparator.comparingInt(value -> Math.abs(value - exact)))
-//                .orElse(0);
-
         int delta = Math.abs(palette[0] - exact);
         for (int i = 0; i < palette.length; i++) {
             int newDelta = Math.abs(palette[i] - exact);
             if (newDelta > delta) {
                 return palette[i - 1];
             }
-        delta = newDelta;
+            delta = newDelta;
         }
         return palette[palette.length - 1];
     }
 
     private static int[] getPalette(Integer[] colorsArray, int colorsNum) {
-       int[] palette = new int[colorsNum];
+        int[] palette = new int[colorsNum];
         double delta = colorsArray.length / (colorsNum * 2);
         for (int i = 0; i < colorsNum; i++) {
             int index = (int) ((2 * i + 1) * delta);
@@ -73,15 +77,27 @@ public class ImageCompressing {
         return palette;
     }
 
-    private static Integer[] getSortedArray(Set<Integer> colorsSet) {
-        Integer[] array = new Integer[colorsSet.size()];
-        Iterator iterator = colorsSet.iterator();
-        for (int i = 0; i < array.length; i++) {
-            array[i] = (Integer) iterator.next();
-        }
-        Arrays.sort(array);
-        return array;
+    private static void diffuseError(BufferedImage image, int indexX, int indexY, int errorR, int errorG, int errorB) {
+        diffuseErrorToPixel(image, indexX + 1, indexY, errorR, errorG, errorB, 7);
+        diffuseErrorToPixel(image, indexX - 1, indexY + 1, errorR, errorG, errorB, 3);
+        diffuseErrorToPixel(image, indexX, indexY + 1, errorR, errorG, errorB, 5);
+        diffuseErrorToPixel(image, indexX + 1, indexY + 1, errorR, errorG, errorB, 1);
     }
 
-
+    private static void diffuseErrorToPixel(BufferedImage image, int indexX, int indexY, int errorR, int errorG, int errorB, int k) {
+        if (indexX < image.getWidth() && indexY < image.getHeight() && indexX > -1) {
+            Color c = new Color(image.getRGB(indexX, indexY));
+            int newR = c.getRed() + k * errorR;
+            int newG = c.getGreen() + k * errorG;
+            int newB = c.getBlue() + k * errorB;
+            if (newR < 0) newR = 0;
+            if (newG < 0) newG = 0;
+            if (newB < 0) newB = 0;
+            if (newR > 255) newR = 255;
+            if (newG > 255) newG = 255;
+            if (newB > 255) newB = 255;
+            Color newColor = new Color(newR, newG, newB);
+            image.setRGB(indexX, indexY, newColor.getRGB());
+        }
+    }
 }

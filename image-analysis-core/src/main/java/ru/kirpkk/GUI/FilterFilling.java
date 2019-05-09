@@ -1,5 +1,6 @@
 package ru.kirpkk.GUI;
 
+import ru.kirpkk.image_processing.ImageFiltering;
 import ru.kirpkk.image_processing.ImageProcessing;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.image.BufferedImage;
 /**
  * Created by Ксения on 10.10.2017.
  */
-public class FilterFilling extends JFrame{
+public class FilterFilling extends JFrame {
 
     private JTable table;
     private JButton bOK = new JButton("OK");
@@ -21,7 +22,9 @@ public class FilterFilling extends JFrame{
     Integer rows, cols, x, y;
     Float[][] matrix;
 
-    enum Filtering {FILTER, DILATATION, EROSION, LOCKING, UNLOCKING};
+    enum Filtering {FILTER, DILATATION, EROSION, LOCKING, UNLOCKING}
+
+    ;
 
     FilterFilling(final FilterSettings parent, final int rows, final int cols, final int x, final int y, final BufferedImage im, final Filtering type) {
 
@@ -63,24 +66,29 @@ public class FilterFilling extends JFrame{
                 matrix = new Float[rows][cols];
                 try {
                     try {
-                        for (int i = 0;i < rows;i++) {
-                            for (int j = 0;j < cols;j++) {
+                        for (int i = 0; i < rows; i++) {
+                            for (int j = 0; j < cols; j++) {
                                 matrix[i][j] = new Float((String) (table.getModel().getValueAt(i, j)));
                             }
                         }
                         FilterFilling.this.parent.dispose();
                         FilterFilling.this.dispose();
                         switch (type) {
-                            case FILTER: new MainForm(ImageProcessing.filter(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
-                                            break;
-                            case DILATATION:new MainForm(ImageProcessing.dilatation(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
-                                            break;
-                            case EROSION: new MainForm(ImageProcessing.erosion(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
-                                            break;
-                            case LOCKING: new MainForm(ImageProcessing.locking(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
-                                            break;
-                            case UNLOCKING: new MainForm(ImageProcessing.unlocking(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
-                                            break;
+                            case FILTER:
+                                new MainForm(ImageFiltering.convolution(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
+                                break;
+                            case DILATATION:
+                                new MainForm(ImageProcessing.dilatation(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
+                                break;
+                            case EROSION:
+                                new MainForm(ImageProcessing.erosion(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
+                                break;
+                            case LOCKING:
+                                new MainForm(ImageProcessing.locking(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
+                                break;
+                            case UNLOCKING:
+                                new MainForm(ImageProcessing.unlocking(im, matrix, rows, cols, x, y), parent.parent.imBW, parent.parent.bin, 1);
+                                break;
 
                         }
                     } catch (NumberFormatException exc) {

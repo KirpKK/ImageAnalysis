@@ -1,0 +1,75 @@
+<html>
+<head>
+    <title>convolution</title>
+    <style>
+        body {
+            background-image: url("background.jpg");
+        }
+
+        div {
+            border-style: dotted;
+            border-color: beige;
+            border-radius: 10px;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        button {
+            margin: 7px;
+        }
+
+        ul {
+            list-style-type: circle;
+        }
+    </style>
+<body>
+
+<div>
+    <input id="mainImage" name="myFile" type="file"
+           dirname="D:\Учебная литература\Анализ изображений"
+           oninput="openImage()"/>
+
+    <label>aperture main element row: </label> <input id="row"/>
+    <label>aperture main element column: </label> <input id="column"/><br/>
+    <label>aperture denominator: </label> <input id="denominator"/><br/>
+    %s
+
+    <button id="convolution" onclick="convolution()">
+        convolution
+    </button>
+</div>
+
+<div>
+
+
+    <label>LPF (+ elements, sum = 1) - unsharp mask</label><br/>
+    <label>HPF (+/- elements, sum = 0) - edges, textures, noises</label><br/>
+    <label>sharpening ( +/- elements, sum = 1)</label><br/>
+</div>
+
+<script language="JavaScript">
+    let path;
+    let ext;
+
+    function openImage() {
+        let input = document.getElementById("mainImage").value;
+        path = input.substring(0, input.lastIndexOf('.')).replace('C:\\fakepath\\', '');
+        ext = input.substring(input.lastIndexOf('.') + 1);
+        window.open('http://localhost:8080/image/' + path + '/' + ext);
+    }
+
+    function convolution() {
+        let row = document.getElementById("row").value;
+        let column = document.getElementById("column").value;
+
+        let denominator = document.getElementById("denominator").value;
+        let aperture = '' %s +
+            denominator;
+        window.open(window.location + '/' + path + '/' + ext + '/'
+            + row + '/' + column + '/' + aperture);
+    }
+</script>
+
+</body>
+
+</html>

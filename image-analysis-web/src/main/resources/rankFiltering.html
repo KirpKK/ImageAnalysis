@@ -1,0 +1,67 @@
+<html>
+<head>
+    <title>rank filtering</title>
+    <style>
+        body {
+            background-image: url("background.jpg");
+        }
+
+        div {
+            border-style: dotted;
+            border-color: beige;
+            border-radius: 10px;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        button {
+            margin: 7px;
+        }
+
+        ul {
+            list-style-type: circle;
+        }
+    </style>
+<body>
+
+<div>
+    <input id="mainImage" name="myFile" type="file"
+           dirname="D:\Учебная литература\Анализ изображений"
+           oninput="openImage()"/>
+
+    <label>aperture main element row: </label> <input id="row"/>
+    <label>aperture main element column: </label> <input id="column"/><br/>
+    <br/>
+    <label>rank: </label> <input id="rank"/><br/>
+    %s
+
+    <button id="convolution" onclick="rankFiltering()">
+        rank filtering
+    </button>
+</div>
+
+<script language="JavaScript">
+    let path;
+    let ext;
+
+    function openImage() {
+        let input = document.getElementById("mainImage").value;
+        path = input.substring(0, input.lastIndexOf('.')).replace('C:\\fakepath\\', '');
+        ext = input.substring(input.lastIndexOf('.') + 1);
+        window.open('http://localhost:8080/image/' + path + '/' + ext);
+    }
+
+    function rankFiltering() {
+        let row = document.getElementById("row").value;
+        let column = document.getElementById("column").value;
+        let rank = document.getElementById("rank").value;
+
+        let aperture = '' %s + '';
+        window.open(window.location + '/' + path + '/' + ext + '/'
+            + row + '/' + column + '/' + rank + '/' + aperture);
+    }
+</script>
+
+</body>
+
+</html>
