@@ -26,11 +26,16 @@
 <body>
 
 <div>
-
     <input id="mainImage" name="myFile" type="file"
            dirname="D:\Учебная литература\Анализ изображений"
            oninput="openImage()"/>
-    <!--oninput="tryGet()"/>-->
+</div>
+
+<div>
+    <button id="readBMP" onclick="readBMP()">
+        read BMP
+    </button>
+
     <button id="transpose" onclick="transposeImage()">
         Transpose
     </button>
@@ -53,7 +58,6 @@
         Rotate
     </button>
 </div>
-
 <div>
     <input id="secondImage" name="myFile" type="file"
            dirname="D:\Учебная литература\Анализ изображений"
@@ -219,6 +223,10 @@
         let width = document.getElementById("width").value;
         let height = document.getElementById("height").value;
         window.open('http://localhost:8080/rankFiltering/' + width + '/' + height);
+    }
+
+    function readBMP() {
+        window.open('http://localhost:8080/readBMP/' + path + '/' + ext);
     }
 </script>
 

@@ -13,6 +13,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
@@ -349,6 +352,22 @@ class Controller {
         }
     }
 
+    @RequestMapping(value = "/readBMP/{path}/{ext}", method = RequestMethod.GET)
+    @ResponseBody
+    public void readBMP(HttpServletResponse response, @PathVariable String path, @PathVariable String ext) throws IOException {
+        try {
+            BMPReader bmpReader = new BMPReader();
+            BufferedImage image = bmpReader.read(Paths.get(BASE_DIR,path + "." + ext).toUri());
+//            BufferedImage result = ImageQuantization.getQuantizedImage(newBpp, image);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            ImageIO.write(image, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            response.sendError(400, "Incorrect image");
+        } catch (Exception e) {
+            response.sendError(400, e.getMessage());
+        }
+    }
+
     @RequestMapping(value = "/image", method = RequestMethod.GET)
     @ResponseBody
     public void getImageAsByteArray(HttpServletResponse response) throws IOException {
@@ -366,7 +385,6 @@ class Controller {
         if (path == null || ext == null || path.isEmpty() || ext.isEmpty())
             throw new IllegalArgumentException("Incorrect image");
         String fullPath = BASE_DIR + path + "." + ext;
-        System.out.println("full path: " + fullPath);
         File file = new File(fullPath);
         return ImageIO.read(file);
     }
