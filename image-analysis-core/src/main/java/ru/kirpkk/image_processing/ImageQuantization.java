@@ -69,10 +69,12 @@ public class ImageQuantization {
 
     private static int[] getPalette(Integer[] colorsArray, int colorsNum) {
         int[] palette = new int[colorsNum];
-        double delta = colorsArray.length / (colorsNum * 2);
-        for (int i = 0; i < colorsNum; i++) {
-            int index = (int) ((2 * i + 1) * delta);
-            palette[i] = (colorsArray[index]);
+        palette[0] = colorsArray[0];
+        palette[colorsNum - 1] = colorsArray[colorsArray.length - 1];
+        double delta = (colorsArray.length) / (colorsNum - 1);
+        for (int i = 0; i < colorsNum - 2; i++) {
+            int index = (int) ((i + 1) * delta);
+            palette[i + 1] = (colorsArray[index]);
         }
         return palette;
     }
