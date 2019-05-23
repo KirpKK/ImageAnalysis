@@ -253,6 +253,38 @@ class Controller {
         }
     }
 
+    @RequestMapping(value = "/binarize/{path}/{ext}/{threshold}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getBinarizedImage(HttpServletResponse response, @PathVariable String path, @PathVariable String ext,
+                                  @PathVariable int threshold) throws IOException {
+        try {
+            BufferedImage image = openImage(path, ext);
+            BufferedImage result = ImageProcessing.binary(image, threshold);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            ImageIO.write(result, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            response.sendError(400, "Incorrect image");
+        } catch (Exception e) {
+            response.sendError(400, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/markObjects/{path}/{ext}/{threshold}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getImageWithObjects(HttpServletResponse response, @PathVariable String path,
+                                    @PathVariable String ext,@PathVariable int threshold) throws IOException {
+        try {
+            BufferedImage image = ImageProcessing.binary(openImage(path, ext), threshold);
+            BufferedImage result = ImageMarking.markObjects(image);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            ImageIO.write(result, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            response.sendError(400, "Incorrect image");
+        } catch (Exception e) {
+            response.sendError(400, e.getMessage());
+        }
+    }
+
     @RequestMapping(value = "/convolution/{width}/{height}", method = RequestMethod.GET)
     @ResponseBody
     public String convolution(@PathVariable byte width, @PathVariable byte height) throws IOException {

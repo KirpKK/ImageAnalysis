@@ -101,6 +101,16 @@
     <button id="quantize" onclick="quantizeImage()">
         quantize
     </button>
+
+    <label>threshold: </label> <input id="threshold"/>
+
+    <button id="binarize" onclick="binarize()">
+        binarize
+    </button>
+
+    <button id="markObjects" onclick="markObjects()">
+        markObjects
+    </button>
 </div>
 
 <div>
@@ -135,7 +145,9 @@
     let ext;
 
     function tryGet() {
-        $.get('http://localhost:8080/image/', {}, (data) => {alert(data)});
+        $.get('http://localhost:8080/image/', {}, (data) => {
+            alert(data)
+        });
     }
 
     function openImage() {
@@ -223,6 +235,16 @@
         let width = document.getElementById("width").value;
         let height = document.getElementById("height").value;
         window.open('http://localhost:8080/rankFiltering/' + width + '/' + height);
+    }
+
+    function binarize() {
+        let threshold = document.getElementById("threshold").value;
+        window.open('http://localhost:8080/binarize/' + path + '/' + ext + '/' + threshold);
+    }
+
+    function markObjects() {
+        let threshold = document.getElementById("threshold").value;
+        window.open('http://localhost:8080/markObjects/' + path + '/' + ext + '/' + threshold);
     }
 
     function readBMP() {

@@ -280,9 +280,17 @@ public class ImageProcessing {
         return uniformity/(numberOfPairs*numberOfPairs);
     }
 
-    public static BufferedImage binary(BufferedImage image) {
-        BufferedImage im = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-        int threshold = 128;
+    /**
+     * binarize image using only red component
+     * less than threshold -> black
+     * more than threshold -> white
+     *
+     * @param image
+     * @param threshold
+     * @return
+     */
+    public static BufferedImage binary(BufferedImage image, int threshold) {
+        BufferedImage im = new BufferedImage(image.getWidth(), image.getHeight(), 1);
         Color c;
         int r;
         for (int i = 0;i < image.getWidth();i++) {
@@ -290,9 +298,9 @@ public class ImageProcessing {
                 c = new Color(image.getRGB(i, j));
                 r = c.getRed();
                 if (r > threshold) {
-                    c = new Color(0xFFFFFF);
+                    c = new Color(255,255,255,0);
                 } else {
-                    c = new Color(0x000000);
+                    c = new Color(0,0,0,0);
                 }
                 im.setRGB(i, j, c.getRGB());
             }

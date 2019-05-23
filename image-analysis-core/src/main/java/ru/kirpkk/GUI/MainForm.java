@@ -219,7 +219,7 @@ public class MainForm extends JFrame{
         toBinary.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (im != null) {
-                    new MainForm(ImageProcessing.binary(im), false, true,  1);
+                    new MainForm(ImageProcessing.binary(im, 128), false, true,  1);
                 }else JOptionPane.showMessageDialog(MainForm.this, "Выберите изображение!",
                         "Error", 0);;
             }
