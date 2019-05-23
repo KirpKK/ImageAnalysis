@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
 
-public class ImageMarking {
+public class ImageLabeling {
     private static final Color BACKGROUND = new Color(0x000000);
     private static final Color OBJECT = new Color(0xFFFFFF);
     private static Stack<Integer> moments0 = new Stack<>();
@@ -40,8 +40,8 @@ public class ImageMarking {
                         moments01.push(new Double(0));
                         while (!col.empty()) {
                             processed.add(col.peek());
-                            for (Pair p : processObject(col.pop(), newColor, image)) {
-                                if (!processed.contains(p)) col.push(p);
+                            for (Object p : processObject(col.pop(), newColor, image)) {
+                                if (!processed.contains(p)) col.push((Pair) p);
                             }
                         }
                         moments01.push(((double) moments01.pop()) / moments0.peek());
@@ -63,7 +63,7 @@ public class ImageMarking {
         }
     }
 
-    private static List<Pair> processObject(Pair xy, int newColor, BufferedImage image) {
+    private static List<Pair<Integer>> processObject(Pair<Integer> xy, int newColor, BufferedImage image) {
         image.setRGB(xy.getX(), xy.getY(), newColor);
         moments0.push(moments0.pop() + 1);
         moments10.push(moments10.pop() + xy.getX());
@@ -72,11 +72,11 @@ public class ImageMarking {
         return get4Neighbours(xy, image);
     }
 
-    private static List<Pair> get4Neighbours(Pair xy, BufferedImage image) {
-        List<Pair> neighbours = new ArrayList<>();
+    private static List<Pair<Integer>> get4Neighbours(Pair<Integer> xy, BufferedImage image) {
+        List<Pair<Integer>> neighbours = new ArrayList<>();
         int x = xy.getX();
         int y = xy.getY();
-        if (x - 1 >= 0 && isObject(image.getRGB(x - 1, y))) neighbours.add(new Pair(x - 1, y));
+        if (x - 1 >= 0 && isObject(image.getRGB(x - 1, y))) neighbours.add(new Pair<>(x - 1, y));
         if (x + 1 < image.getWidth() && isObject(image.getRGB(x + 1, y)))
             neighbours.add(new Pair(x + 1, y));
         if (y - 1 >= 0 && isObject(image.getRGB(x, y - 1))) neighbours.add(new Pair(x, y - 1));
@@ -132,8 +132,8 @@ public class ImageMarking {
             moments20.push(new Double(0));
             moments02.push(new Double(0));
             for (Pair xy : objects.get(i)) {
-                moments20.push(moments20.pop() + Math.pow(xy.getX() - dm10.peek(), 2));
-                moments02.push(moments02.pop() + Math.pow(xy.getY() - dm01.peek(), 2));
+                moments20.push(moments20.pop() + Math.pow((int) xy.getX() - dm10.peek(), 2));
+                moments02.push(moments02.pop() + Math.pow((int) xy.getY() - dm01.peek(), 2));
             }
             dm10.pop();
             dm01.pop();
@@ -143,21 +143,29 @@ public class ImageMarking {
 }
 
 
-class Pair {
-    private int x;
-    private int y;
+class Pair<T> {
+    private T x;
+    private T y;
 
-    Pair(int x, int y) {
+    Pair(T x, T y) {
         this.x = x;
         this.y = y;
     }
 
-    int getX() {
+    T getX() {
         return x;
     }
 
-    int getY() {
+    T getY() {
         return y;
+    }
+
+    public void setX(T x) {
+        this.x = x;
+    }
+
+    public void setY(T y) {
+        this.y = y;
     }
 
     @Override
@@ -165,8 +173,8 @@ class Pair {
         if (this == o) return true;
         if (!(o instanceof Pair)) return false;
         Pair pair = (Pair) o;
-        return x == pair.x &&
-                y == pair.y;
+        return x.equals(pair.x) &&
+                y.equals(pair.y);
     }
 
     @Override

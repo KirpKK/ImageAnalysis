@@ -13,8 +13,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
@@ -272,10 +270,26 @@ class Controller {
     @RequestMapping(value = "/markObjects/{path}/{ext}/{threshold}", method = RequestMethod.GET)
     @ResponseBody
     public void getImageWithObjects(HttpServletResponse response, @PathVariable String path,
-                                    @PathVariable String ext,@PathVariable int threshold) throws IOException {
+                                    @PathVariable String ext, @PathVariable int threshold) throws IOException {
         try {
             BufferedImage image = ImageProcessing.binary(openImage(path, ext), threshold);
-            BufferedImage result = ImageMarking.markObjects(image);
+            BufferedImage result = ImageLabeling.markObjects(image);
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            ImageIO.write(result, "jpg", response.getOutputStream());
+        } catch (IOException e) {
+            response.sendError(400, "Incorrect image");
+        } catch (Exception e) {
+            response.sendError(400, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/Canny/{path}/{ext}", method = RequestMethod.GET)
+    @ResponseBody
+    public void getCannyEdges(HttpServletResponse response, @PathVariable String path,
+                              @PathVariable String ext) throws IOException {
+        try {
+            CannyEdgeDetecting canny = new CannyEdgeDetecting(1, 100, 140);
+            BufferedImage result = canny.processCanny(openImage(path, ext));
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             ImageIO.write(result, "jpg", response.getOutputStream());
         } catch (IOException e) {
@@ -359,10 +373,10 @@ class Controller {
     @RequestMapping(value = "/rankFiltering/{width}/{height}/{path}/{ext}/{mainRow}/{mainColumn}/{rank}/{aperture}", method = RequestMethod.GET)
     @ResponseBody
     public void rankFiltering(HttpServletResponse response,
-                            @PathVariable int width, @PathVariable int height,
-                            @PathVariable String path, @PathVariable String ext,
-                            @PathVariable int rank,@PathVariable String aperture,
-                            @PathVariable int mainRow, @PathVariable int mainColumn) throws IOException {
+                              @PathVariable int width, @PathVariable int height,
+                              @PathVariable String path, @PathVariable String ext,
+                              @PathVariable int rank, @PathVariable String aperture,
+                              @PathVariable int mainRow, @PathVariable int mainColumn) throws IOException {
         try {
             BufferedImage image = openImage(path, ext);
             int[][] f = new int[height][width];
@@ -389,7 +403,7 @@ class Controller {
     public void readBMP(HttpServletResponse response, @PathVariable String path, @PathVariable String ext) throws IOException {
         try {
             BMPReader bmpReader = new BMPReader();
-            BufferedImage image = bmpReader.read(Paths.get(BASE_DIR,path + "." + ext).toUri());
+            BufferedImage image = bmpReader.read(Paths.get(BASE_DIR, path + "." + ext).toUri());
 //            BufferedImage result = ImageQuantization.getQuantizedImage(newBpp, image);
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             ImageIO.write(image, "jpg", response.getOutputStream());

@@ -29,6 +29,10 @@
     <input id="mainImage" name="myFile" type="file"
            dirname="D:\Учебная литература\Анализ изображений"
            oninput="openImage()"/>
+
+    <button id="Canny" onclick="Canny()">
+        Canny
+    </button>
 </div>
 
 <div>
@@ -249,6 +253,10 @@
 
     function readBMP() {
         window.open('http://localhost:8080/readBMP/' + path + '/' + ext);
+    }
+
+    function Canny() {
+        window.open('http://localhost:8080/Canny/' + path + '/' + ext);
     }
 </script>
 
