@@ -13,6 +13,7 @@ public class ImageLabeling {
     private static Stack<Double> moments01 = new Stack<>();
     private static Stack<Double> moments20 = new Stack<>();
     private static Stack<Double> moments02 = new Stack<>();
+    private static Stack<Double> moments11 = new Stack<>();
     private static List<List<Pair>> objects = new ArrayList<>();
     private static int objectsNum = 0;
 
@@ -56,6 +57,7 @@ public class ImageLabeling {
             System.out.println(moments01);
             System.out.println(moments20);
             System.out.println(moments02);
+            System.out.println(moments11);
             return image;
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,9 +133,11 @@ public class ImageLabeling {
         for (int i = objects.size() - 1; i >= 0; i--) {
             moments20.push(new Double(0));
             moments02.push(new Double(0));
+            moments11.push(new Double(0));
             for (Pair xy : objects.get(i)) {
                 moments20.push(moments20.pop() + Math.pow((int) xy.getX() - dm10.peek(), 2));
                 moments02.push(moments02.pop() + Math.pow((int) xy.getY() - dm01.peek(), 2));
+                moments11.push(moments11.pop() + ((int) xy.getY() - dm01.peek())*((int) xy.getX() - dm10.peek()));
             }
             dm10.pop();
             dm01.pop();

@@ -81,7 +81,7 @@ public class CannyEdgeDetecting {
     }
 
     private static float getAngle(float rX, float rY) {
-        return ((int) Math.toDegrees(Math.atan(rX / rY)) / 45) * 45;
+        return ((int) Math.toDegrees(Math.atan2(rY , rX)) / 45) * 45;
     }
 
     private Pair<Float>[][] nonMaximalSuppression(Pair<Float>[][] sobelMatrix, int width, int height) {
