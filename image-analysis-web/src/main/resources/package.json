@@ -19,7 +19,7 @@
     "node-static": "^0.7.10",
     "style-loader": "^0.20.1",
     "tls": "0.0.1",
-    "underscore": "^1.8.3",
+    "underscore": "^1.12.1",
     "webpack": "^3.10.0",
     "xml-loader": "^1.2.1",
     "xmlbuilder": "^9.0.7"
