@@ -10,7 +10,7 @@
     "diagram-js": "^0.28.1",
     "dns": "^0.2.2",
     "ejs": "^2.5.7",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.6",
     "jquery": "^3.3.1",
