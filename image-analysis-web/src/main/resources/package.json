@@ -5,7 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "css-loader": "^0.28.9",
-    "csv-loader": "^2.1.1",
+    "csv-loader": "^3.0.5",
     "dgram": "^1.0.1",
     "diagram-js": "^0.28.1",
     "dns": "^0.2.2",
